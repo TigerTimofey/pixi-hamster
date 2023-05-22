@@ -371,7 +371,7 @@ function startMainGame() {
   const cloudsSprite = new PIXI.TilingSprite(
     cloudsTexture,
     app.screen.width,
-    (app.screen.height -= 150)
+    app.screen.height
   );
   cloudsSprite.tileScale.set(0.5, 0.5);
   app.ticker.add(function () {
@@ -409,7 +409,7 @@ function startMainGame() {
   const groundSprite = new PIXI.TilingSprite(
     groundTexture,
     app.screen.width,
-    (app.screen.height += 250)
+    (app.screen.height += 180)
   );
   app.ticker.add(function () {
     groundSprite.tilePosition.x -= 3;
@@ -487,10 +487,10 @@ function startMainGame() {
   const sunSprite = new PIXI.Sprite(sunTexture);
   sunSprite.interactive = true;
   sunSprite.x = 0;
-  sunSprite.y = -140;
+  sunSprite.y = 90;
   sunSprite.animationSpeed = 100;
-  sunSprite.width = 900;
-  sunSprite.height = 700;
+  sunSprite.width = 550;
+  sunSprite.height = 400;
 
   app.ticker.add(function () {
     sunSprite.position.x += 0.6;
@@ -510,10 +510,10 @@ function startMainGame() {
 
   moonSprite.interactive = true;
   moonSprite.x = -1900;
-  moonSprite.y = 50;
+  moonSprite.y = 200;
   moonSprite.animationSpeed = 100;
-  moonSprite.width = 500;
-  moonSprite.height = 300;
+  moonSprite.width = 350;
+  moonSprite.height = 180;
 
   app.ticker.add(function () {
     moonSprite.position.x += 0.6;
