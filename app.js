@@ -10,10 +10,12 @@ app.stage.addChild(menuContainer);
 app.renderer.backgroundColor = 0x0000ff;
 app.renderer.resize(window.innerWidth, window.innerHeight);
 app.renderer.view.style.position = "absolute";
+app.renderer.view.style.width = "100%";
+app.renderer.view.style.height = "100%";
 
 const style = new PIXI.TextStyle({
   fontFamily: "Arial",
-  fontSize: 65,
+  fontSize: 45,
   fontWeight: "bold",
   fill: ["#00ddff", "#00ff04"],
   stroke: "#4a1850",
@@ -149,6 +151,7 @@ function startMainGame() {
           }
         }
       }
+
       if (e.key === "ArrowLeft") {
         gsap.to(drag, { x: "-=50", duration: 0.3, ease: "power2.out" });
         if (drag.x < -105) {
@@ -179,6 +182,32 @@ function startMainGame() {
         });
       }
     });
+    //Mobile
+    app.renderer.view.addEventListener("touchstart", onScreenTouch);
+    function onScreenTouch(event) {
+      event.preventDefault();
+      jumpPlayer();
+    }
+
+    function jumpPlayer() {
+      const originalY = drag.y;
+      const jumpHeight = 200;
+      const jumpDuration = 0.32; // in seconds
+
+      gsap.to(drag, {
+        y: originalY - jumpHeight,
+        duration: jumpDuration,
+        ease: "power2.out",
+        onComplete: function () {
+          gsap.to(drag, {
+            y: 750,
+            x: "+=0",
+            duration: jumpDuration,
+            ease: "power1.in",
+          });
+        },
+      });
+    }
     //Add Collision drag and money
     let numberCoin = 0;
     app.ticker.add(function () {
@@ -342,7 +371,7 @@ function startMainGame() {
   const cloudsSprite = new PIXI.TilingSprite(
     cloudsTexture,
     app.screen.width,
-    app.screen.height
+    (app.screen.height -= 150)
   );
   cloudsSprite.tileScale.set(0.5, 0.5);
   app.ticker.add(function () {
@@ -380,7 +409,7 @@ function startMainGame() {
   const groundSprite = new PIXI.TilingSprite(
     groundTexture,
     app.screen.width,
-    app.screen.height
+    (app.screen.height += 250)
   );
   app.ticker.add(function () {
     groundSprite.tilePosition.x -= 3;
@@ -500,17 +529,4 @@ function startMainGame() {
   app.stage.addChild(moonSprite);
 
   app.stage.addChild(moneySprite);
-
-  //Button
-  const buttonTexture = PIXI.Texture.from("./images/button2.png");
-  const buttonSprite = new PIXI.TilingSprite(buttonTexture);
-  buttonSprite.tileScale.set(0.2, 0.31);
-
-  buttonSprite.interactive = true;
-  buttonSprite.buttonMode = true;
-  buttonSprite.on("pointertap", () => {
-    location.reload();
-  });
-
-  app.stage.addChild(buttonSprite);
 }
