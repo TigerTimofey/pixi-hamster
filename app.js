@@ -5,6 +5,8 @@ const app = new Application({
   // ... your app configuration
 });
 
+const mediaQueryMenu = window.matchMedia("(max-width: 400px)");
+
 const menuContainer = new Container();
 app.stage.addChild(menuContainer);
 app.renderer.backgroundColor = 0x0000ff;
@@ -12,7 +14,7 @@ app.renderer.resize(window.innerWidth, window.innerHeight);
 app.renderer.view.style.position = "absolute";
 app.renderer.view.style.width = "100%";
 app.renderer.view.style.height = "100%";
-
+console.log("test");
 const style = new PIXI.TextStyle({
   fontFamily: "Arial",
   fontSize: 45,
@@ -58,7 +60,6 @@ app.ticker.add(function () {
 cloudsMenuSprite.tileScale.set(0.5);
 
 const groundMenuTexture = PIXI.Texture.from("./images/ground.png");
-
 const groundenuSprite = new PIXI.TilingSprite(
   groundMenuTexture,
   app.screen.width,
@@ -71,6 +72,21 @@ menuContainer.addChild(groundenuSprite);
 menuContainer.addChild(startButton);
 menuContainer.addChild(logoText);
 
+if (mediaQueryMenu.matches) {
+  const groundMenuMobileTexture = PIXI.Texture.from("./images/ground.png");
+  const groundenuMobileSprite = new PIXI.TilingSprite(
+    groundMenuMobileTexture,
+    app.screen.width,
+    app.screen.height
+  );
+  groundenuMobileSprite.tileScale.set(0.3, 0.35);
+  app.ticker.add(function () {
+    groundenuMobileSprite.tilePosition.x -= 1;
+  });
+  menuContainer.removeChild(groundenuSprite);
+  app.stage.addChild(groundenuMobileSprite);
+}
+
 // Function to start the game
 function startGame() {
   // Remove the menu container from the stage
@@ -80,6 +96,8 @@ function startGame() {
   startMainGame();
 }
 function startMainGame() {
+  const mediaQuery = window.matchMedia("(max-width: 400px)");
+
   const audioCoin = new Audio("./audio/coin.wav");
   const gameOver = new Audio("./audio/gameover.wav");
 
@@ -379,6 +397,22 @@ function startMainGame() {
   });
   app.stage.addChild(cloudsSprite);
 
+  if (mediaQuery.matches) {
+    // alert("Media Query Matched!");
+    const cloudsTextureMobile = PIXI.Texture.from("./images/clouds.png");
+    const cloudsSpriteMobile = new PIXI.TilingSprite(
+      cloudsTextureMobile,
+      (app.screen.width += 50),
+      (app.screen.height += 50)
+    );
+    cloudsSpriteMobile.tileScale.set(0.5, 0.6);
+    app.ticker.add(function () {
+      cloudsSpriteMobile.tilePosition.x += 1;
+    });
+    app.stage.removeChild(cloudsSprite);
+    app.stage.addChild(cloudsSpriteMobile);
+  }
+
   //House
   function house() {
     const houseTexture = PIXI.Texture.from("./images/house.png");
@@ -415,8 +449,23 @@ function startMainGame() {
     groundSprite.tilePosition.x -= 3;
   });
   groundSprite.tileScale.set(0.4, 0.5);
-
   app.stage.addChild(groundSprite);
+
+  //Mobile logic
+  if (mediaQuery.matches) {
+    // alert("Media Query Matched!");
+    app.ticker.add(function () {
+      groundSpriteMobile.tilePosition.x -= 3;
+    });
+    const groundSpriteMobile = new PIXI.TilingSprite(
+      groundTexture,
+      app.screen.width,
+      app.screen.height
+    );
+    groundSpriteMobile.tileScale.set(0.3, 0.49);
+    app.stage.removeChild(groundSprite);
+    app.stage.addChild(groundSpriteMobile);
+  }
 
   //Rock
   const rockTexture = PIXI.Texture.from("./images/rock.png");
