@@ -503,7 +503,6 @@ function startMainGame() {
     }
   });
   app.stage.addChild(sunSprite);
-
   //Moon
   const moonTexture = PIXI.Texture.from("./images/moon.png");
   const moonSprite = new PIXI.Sprite(moonTexture);
