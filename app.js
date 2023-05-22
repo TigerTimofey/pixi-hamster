@@ -506,7 +506,7 @@ function startMainGame() {
   //Moon
   const moonTexture = PIXI.Texture.from("./images/moon.png");
   const moonSprite = new PIXI.Sprite(moonTexture);
-
+  //d
   moonSprite.interactive = true;
   moonSprite.x = -1900;
   moonSprite.y = 200;
