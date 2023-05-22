@@ -506,14 +506,13 @@ function startMainGame() {
   //Moon
   const moonTexture = PIXI.Texture.from("./images/moon.png");
   const moonSprite = new PIXI.Sprite(moonTexture);
-  //d
   moonSprite.interactive = true;
   moonSprite.x = -1900;
   moonSprite.y = 200;
   moonSprite.animationSpeed = 100;
   moonSprite.width = 350;
   moonSprite.height = 180;
-
+  //co
   app.ticker.add(function () {
     moonSprite.position.x += 0.6;
 
