@@ -251,7 +251,7 @@ function startMainGame() {
       });
       const richText = new PIXI.Text(`COUNT: ${numberCoin}`, style);
       richText.x = 50;
-      richText.y = 100;
+      richText.y = 300;
 
       app.stage.addChild(richText);
       // Check collision between drag and moneySprite
@@ -268,7 +268,6 @@ function startMainGame() {
             moneySprite.width = 150;
             moneySprite.height = 150;
           }
-
           const min = 200;
           const max = 550;
           const randomCoinPosition = Math.random() * (max - min + 1) + min;
@@ -376,7 +375,6 @@ function startMainGame() {
 
   app.ticker.add(function () {
     moneySprite.position.x -= 6;
-    console.log(moneySprite.getGlobalPosition());
     if (moneySprite.x < -100) {
       resetRockPosition();
       function resetRockPosition() {
