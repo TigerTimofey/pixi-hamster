@@ -1,4 +1,5 @@
 const Application = PIXI.Application;
+
 const Container = PIXI.Container;
 
 const app = new Application({
@@ -132,7 +133,7 @@ function startMainGame() {
 
     const drag = new PIXI.AnimatedSprite(textures);
 
-    drag.position.set(0, 750);
+    drag.position.set(0, 450);
     // drag.position.set(0, 450);
     drag.scale.set(1.7, 1.7);
     app.stage.addChild(drag);
@@ -191,7 +192,7 @@ function startMainGame() {
 
       if (e.key === "ArrowUp" || e.key === " ") {
         const originalY = drag.y;
-        const jumpHeight = 150;
+        const jumpHeight = 120;
         const jumpDuration = 0.5;
         gsap.to(drag, {
           y: originalY - jumpHeight,
@@ -204,64 +205,19 @@ function startMainGame() {
               duration: jumpDuration,
               ease: "power1.in",
             });
-
-            // if (originalY + jumpHeight <= 0) {
-
-            if (drag.y <= 220) {
-              gsap.to(drag, {
-                y: "+=130",
-                // duration: 0,
-                onComplete: function () {
-                  gsap.to(drag, {
-                    y: 750,
-                    x: "+=0",
-                    duration: jumpDuration,
-                    ease: "power1.in",
-                  });
-                  newCloudMove();
-                  function newCloudMove() {
-                    drag.stop();
-                    drag.texture = PIXI.Texture.from(`./images/poof.png`);
-                    drag.width = 150;
-                    drag.height = 150;
-                    let poof = new Audio("./audio/poof.mp3");
-                    poof.play();
-                    if (drag.y > 600) {
-                      drag = new PIXI.AnimatedSprite(textures);
-                      drag.width = 600;
-                      drag.height = 600;
-                    }
-                  }
-                },
-              });
+            if (
+              drag.y <=
+              window.innerWidth - window.innerWidth + 120 + drag.width
+            ) {
+              resetDragPosition();
+              function resetDragPosition() {
+                gsap.to(drag, {
+                  y: 200 + jumpHeight,
+                  duration: 0.1,
+                  ease: "power2.out",
+                });
+              }
             }
-
-            // if (
-            //   drag.y <=
-            //   window.innerHeight - window.innerHeight - 1 + drag.height + 100
-            // ) {
-            //   resetDragPosition();
-            //   function resetDragPosition() {
-            //     gsap.to(drag, {
-            //       y: window.innerHeight - window.innerHeight - 1 + drag.height + 100,
-            //       // window.innerHeight - window.innerHeight + drag.height * 1.7,
-            //       duration: 0.3,
-            //       ease: "power2.out",
-            //     });
-            //   }
-            // }
-
-            // if (drag.y <= 500) {
-            //   drag.stop();
-            //   drag.texture = PIXI.Texture.from(`./images/poof.png`);
-            //   drag.width = 150;
-            //   drag.height = 150;
-            //   let poof = new Audio("./audio/poof.mp3");
-            //   poof.play();
-            // } else if (drag.y <= 600 && drag.width == 155) {
-            //   let poof = new Audio("./audio/poof.mp3");
-            //   poof.play();
-            // }
           },
         });
       }
@@ -276,7 +232,7 @@ function startMainGame() {
     function jumpPlayer() {
       const originalY = drag.y;
       const jumpHeight = 200;
-      const jumpDuration = 0.32; // in seconds
+      const jumpDuration = 0.32;
 
       gsap.to(drag, {
         y: originalY - jumpHeight,
@@ -320,6 +276,7 @@ function startMainGame() {
       richText.y = 300;
 
       app.stage.addChild(richText);
+
       // Check collision between drag and moneySprite
       if (collision(drag, moneySprite)) {
         console.log("Collision detected between drag and moneySprite");
@@ -340,6 +297,26 @@ function startMainGame() {
           moneySprite.y = randomCoinPosition;
         }, 100);
       }
+
+      function gameOverAnimation() {
+        const gameOverTexture = PIXI.Texture.from(`./images/gameovertxt.png`);
+        const gameOverTSprite = new PIXI.Sprite(gameOverTexture);
+        gameOverTSprite.anchor.set(0.1, -0.1);
+        gameOverTSprite.interactive = true;
+        gameOverTSprite.x = window.innerHeight / 2 - 150;
+        gameOverTSprite.y = window.innerWidth / 2 - 450;
+        gameOverTSprite.width = 800;
+        gameOverTSprite.height = 800;
+        if (mediaQuery.matches) {
+          gameOverTSprite.anchor.set(1.25, -0.8);
+          gameOverTSprite.x = window.innerHeight / 2;
+          gameOverTSprite.y = window.innerWidth / 2;
+          gameOverTSprite.width = 200;
+          gameOverTSprite.height = 200;
+        }
+        app.stage.addChild(gameOverTSprite);
+        gameOver.play();
+      }
       // Check collision between drag and rock
       if (collisionRocks(drag, rockSprite)) {
         console.log("Collision detected between drag and moneySprite");
@@ -355,23 +332,7 @@ function startMainGame() {
             ease: "power2.out",
           });
           // Game over animation
-          const gameOverTexture = PIXI.Texture.from(`./images/gameovertxt.png`);
-          const gameOverTSprite = new PIXI.Sprite(gameOverTexture);
-          gameOverTSprite.anchor.set(0.1, -0.1);
-          gameOverTSprite.interactive = true;
-          gameOverTSprite.x = window.innerHeight / 2 - 50;
-          gameOverTSprite.y = window.innerWidth / 2 - 600;
-          gameOverTSprite.width = 800;
-          gameOverTSprite.height = 800;
-          if (mediaQuery.matches) {
-            gameOverTSprite.anchor.set(1.25, -0.8);
-            gameOverTSprite.x = window.innerHeight / 2;
-            gameOverTSprite.y = window.innerWidth / 2;
-            gameOverTSprite.width = 200;
-            gameOverTSprite.height = 200;
-          }
-          app.stage.addChild(gameOverTSprite);
-          gameOver.play();
+          gameOverAnimation();
 
           setTimeout(() => {
             location.reload();
@@ -390,24 +351,7 @@ function startMainGame() {
             ease: "power2.out",
           });
           // Game over animation
-          const gameOverTexture = PIXI.Texture.from(`./images/gameovertxt.png`);
-          const gameOverTSprite = new PIXI.Sprite(gameOverTexture);
-
-          gameOverTSprite.anchor.set(0.1, -0.1);
-          gameOverTSprite.interactive = true;
-          gameOverTSprite.x = window.innerHeight / 2 - 50;
-          gameOverTSprite.y = window.innerWidth / 2 - 600;
-          gameOverTSprite.width = 800;
-          gameOverTSprite.height = 800;
-          if (mediaQuery.matches) {
-            gameOverTSprite.anchor.set(1.25, -0.8);
-            gameOverTSprite.x = window.innerHeight / 2;
-            gameOverTSprite.y = window.innerWidth / 2;
-            gameOverTSprite.width = 200;
-            gameOverTSprite.height = 200;
-          }
-          app.stage.addChild(gameOverTSprite);
-          gameOver.play();
+          gameOverAnimation();
 
           setTimeout(() => {
             location.reload();
@@ -429,24 +373,29 @@ function startMainGame() {
             ease: "power2.out",
           });
           // Game over animation
-          const gameOverTexture = PIXI.Texture.from(`./images/gameovertxt.png`);
-          const gameOverTSprite = new PIXI.Sprite(gameOverTexture);
+          gameOverAnimation();
 
-          gameOverTSprite.anchor.set(0.1, -0.1);
-          gameOverTSprite.interactive = true;
-          gameOverTSprite.x = window.innerHeight / 2 - 50;
-          gameOverTSprite.y = window.innerWidth / 2 - 600;
-          gameOverTSprite.width = 800;
-          gameOverTSprite.height = 800;
-          if (mediaQuery.matches) {
-            gameOverTSprite.anchor.set(1.25, -0.8);
-            gameOverTSprite.x = window.innerHeight / 2;
-            gameOverTSprite.y = window.innerWidth / 2;
-            gameOverTSprite.width = 200;
-            gameOverTSprite.height = 200;
-          }
-          app.stage.addChild(gameOverTSprite);
-          gameOver.play();
+          setTimeout(() => {
+            location.reload();
+          }, 3000);
+        }, 100);
+      }
+      // Check collision between drag and whisper1 (enemySprite)
+      if (collisionRocks(drag, enemySprite)) {
+        console.log("Collision detected between drag and Whisper");
+        drag.stop();
+        app.stage.removeChild(drag);
+        // drag.texture = PIXI.Texture.from(`./images/gameover.png`);
+        // drag.width = 150;
+        // drag.height = 120;
+        setTimeout(() => {
+          gsap.to(drag, {
+            y: "-=300",
+            duration: 3.3,
+            ease: "power2.out",
+          });
+          // Game over animation
+          gameOverAnimation();
 
           setTimeout(() => {
             location.reload();
@@ -455,6 +404,31 @@ function startMainGame() {
       }
     });
   }
+
+  //Moster
+
+  const enemyTexture = PIXI.Texture.from("./images/whisper.gif");
+  const enemySprite = new PIXI.Sprite(enemyTexture);
+
+  enemySprite.interactive = true;
+  enemySprite.x = window.innerHeight + 200;
+  enemySprite.y = 700;
+
+  app.ticker.add(function () {
+    enemySprite.x -= 6;
+    if (enemySprite.x < -190) {
+      resetRockPosition();
+      function resetRockPosition() {
+        enemySprite.x = 2000;
+        const min = 200;
+        const max = 550;
+        const randomEnemyPosition = Math.random() * (max - min + 1) + min;
+        enemySprite.y = randomEnemyPosition;
+        console.log(enemySprite.getGlobalPosition());
+      }
+    }
+  });
+
   //Money
   const moneyTexture = PIXI.Texture.from("./images/money.png");
   const moneySprite = new PIXI.Sprite(moneyTexture);
@@ -652,7 +626,7 @@ function startMainGame() {
   moonSprite.animationSpeed = 100;
   moonSprite.width = 350;
   moonSprite.height = 180;
-  //co
+
   app.ticker.add(function () {
     moonSprite.position.x += 0.6;
 
@@ -667,4 +641,6 @@ function startMainGame() {
   app.stage.addChild(moonSprite);
 
   app.stage.addChild(moneySprite);
+
+  app.stage.addChild(enemySprite);
 }
