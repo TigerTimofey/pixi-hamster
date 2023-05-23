@@ -133,8 +133,8 @@ function startMainGame() {
 
     const drag = new PIXI.AnimatedSprite(textures);
 
-    drag.position.set(0, 450);
     // drag.position.set(0, 450);
+    drag.position.set(0, 750);
     drag.scale.set(1.7, 1.7);
     app.stage.addChild(drag);
     drag.play();
@@ -222,6 +222,7 @@ function startMainGame() {
         });
       }
     });
+
     //Mobile
     app.renderer.view.addEventListener("touchstart", onScreenTouch);
     function onScreenTouch(event) {
@@ -383,11 +384,29 @@ function startMainGame() {
       // Check collision between drag and whisper1 (enemySprite)
       if (collisionRocks(drag, enemySprite)) {
         console.log("Collision detected between drag and Whisper");
+
         drag.stop();
         app.stage.removeChild(drag);
-        // drag.texture = PIXI.Texture.from(`./images/gameover.png`);
-        // drag.width = 150;
-        // drag.height = 120;
+        setTimeout(() => {
+          gsap.to(drag, {
+            y: "-=300",
+            duration: 3.3,
+            ease: "power2.out",
+          });
+          // Game over animation
+          gameOverAnimation();
+
+          setTimeout(() => {
+            location.reload();
+          }, 3000);
+        }, 100);
+      }
+      // Check collision between drag and whisper1 (enemySecondSprite)
+      if (collisionRocks(drag, enemySecondSprite)) {
+        console.log("Collision detected between drag and Whisper");
+        drag.stop();
+        app.stage.removeChild(drag);
+
         setTimeout(() => {
           gsap.to(drag, {
             y: "-=300",
@@ -405,13 +424,13 @@ function startMainGame() {
     });
   }
 
-  //Moster
+  //Whisper enemy first
 
-  const enemyTexture = PIXI.Texture.from("./images/whisper.gif");
+  const enemyTexture = PIXI.Texture.from("./images/whisper.png");
   const enemySprite = new PIXI.Sprite(enemyTexture);
 
   enemySprite.interactive = true;
-  enemySprite.x = window.innerHeight + 200;
+  enemySprite.x = 2600;
   enemySprite.y = 700;
 
   app.ticker.add(function () {
@@ -424,7 +443,32 @@ function startMainGame() {
         const max = 550;
         const randomEnemyPosition = Math.random() * (max - min + 1) + min;
         enemySprite.y = randomEnemyPosition;
-        console.log(enemySprite.getGlobalPosition());
+      }
+    }
+  });
+  //Whisper enemy Second
+
+  const enemySecondTexture = PIXI.Texture.from("./images/whisperSecond.png");
+  const enemySecondSprite = new PIXI.Sprite(enemySecondTexture);
+
+  enemySecondSprite.width = 120;
+  enemySecondSprite.height = 120;
+
+  enemySecondSprite.interactive = true;
+  enemySecondSprite.x = 3600;
+  enemySecondSprite.y = 300;
+
+  app.ticker.add(function () {
+    enemySecondSprite.x -= 6;
+
+    if (enemySecondSprite.x < -190) {
+      resetRockPosition();
+      function resetRockPosition() {
+        enemySecondSprite.x = 4200;
+        const min = 200;
+        const max = 550;
+        const randomEnemyPosition = Math.random() * (max - min + 1) + min;
+        enemySecondSprite.y = randomEnemyPosition;
       }
     }
   });
@@ -495,7 +539,7 @@ function startMainGame() {
       if (houseSprite.x < -600) {
         resetRockPosition();
         function resetRockPosition() {
-          houseSprite.x = 2600;
+          houseSprite.x = 4600;
         }
       }
     });
@@ -503,6 +547,52 @@ function startMainGame() {
   }
   house();
 
+  //House Second
+  function houseSecond() {
+    const houseSecondTexture = PIXI.Texture.from("./images/houseSecond.png");
+    const houseSecondSprite = new PIXI.Sprite(houseSecondTexture);
+
+    houseSecondSprite.interactive = true;
+    houseSecondSprite.x = 2600;
+    houseSecondSprite.y = 510;
+    houseSecondSprite.animationSpeed = 100;
+    houseSecondSprite.width = 500;
+    houseSecondSprite.height = 400;
+
+    app.ticker.add(function () {
+      houseSecondSprite.position.x -= 3;
+      if (houseSecondSprite.x < -600) {
+        resetRockPosition();
+        function resetRockPosition() {
+          houseSecondSprite.x = 3900;
+        }
+      }
+    });
+    app.stage.addChild(houseSecondSprite);
+  }
+  //House Third
+  function houseThird() {
+    const houseThirdTexture = PIXI.Texture.from("./images/houseThird.png");
+    const houseThirdSprite = new PIXI.Sprite(houseThirdTexture);
+
+    houseThirdSprite.interactive = true;
+    houseThirdSprite.x = 3600;
+    houseThirdSprite.y = 480;
+    houseThirdSprite.animationSpeed = 100;
+    houseThirdSprite.width = 500;
+    houseThirdSprite.height = 400;
+
+    app.ticker.add(function () {
+      houseThirdSprite.position.x -= 3;
+      if (houseThirdSprite.x < -600) {
+        resetRockPosition();
+        function resetRockPosition() {
+          houseThirdSprite.x = 3200;
+        }
+      }
+    });
+    app.stage.addChild(houseThirdSprite);
+  }
   // Ground
   const groundTexture = PIXI.Texture.from("./images/ground.png");
   const groundSprite = new PIXI.TilingSprite(
@@ -531,6 +621,8 @@ function startMainGame() {
     app.stage.removeChild(groundSprite);
     app.stage.addChild(groundSpriteMobile);
   }
+  houseSecond();
+  houseThird();
 
   //Rock
   const rockTexture = PIXI.Texture.from("./images/rock.png");
@@ -643,4 +735,6 @@ function startMainGame() {
   app.stage.addChild(moneySprite);
 
   app.stage.addChild(enemySprite);
+
+  app.stage.addChild(enemySecondSprite);
 }
