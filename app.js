@@ -2,20 +2,20 @@ const Application = PIXI.Application;
 
 const Container = PIXI.Container;
 
-const app = new Application({
-  // ... your app configuration
-});
+const app = new Application({});
 
 const mediaQueryMenu = window.matchMedia("(max-width: 400px)");
 
 const menuContainer = new Container();
 app.stage.addChild(menuContainer);
+
 app.renderer.backgroundColor = 0x0000ff;
 app.renderer.resize(window.innerWidth, window.innerHeight);
 app.renderer.view.style.position = "absolute";
 app.renderer.view.style.width = "100%";
 app.renderer.view.style.height = "100%";
-console.log("test");
+
+// Logotype style for text
 const style = new PIXI.TextStyle({
   fontFamily: "Arial",
   fontSize: 45,
@@ -32,23 +32,23 @@ const style = new PIXI.TextStyle({
   wordWrapWidth: 440,
   lineJoin: "round",
 });
-
 const logoText = new PIXI.Text("FOREST RUN", style);
 logoText.anchor.set(0.5);
 logoText.position.set(app.screen.width / 2, app.screen.height / 2 - 300);
 
+//Start Button in menu Container
 const startButton = new PIXI.Sprite(
   PIXI.Texture.from("./images/startgame.png")
 );
 startButton.anchor.set(0.5);
 startButton.position.set(app.screen.width / 2, app.screen.height / 2 - 200);
-
 startButton.interactive = true;
 startButton.buttonMode = true;
 startButton.on("pointertap", startGame);
 
 document.body.appendChild(app.view);
 
+//Menu container Clounds and Ground animation
 const cloudsMenuTexture = PIXI.Texture.from("./images/clouds.png");
 const cloudsMenuSprite = new PIXI.TilingSprite(
   cloudsMenuTexture,
@@ -59,7 +59,6 @@ app.ticker.add(function () {
   cloudsMenuSprite.tilePosition.x += 1;
 });
 cloudsMenuSprite.tileScale.set(0.5);
-
 const groundMenuTexture = PIXI.Texture.from("./images/ground.png");
 const groundenuSprite = new PIXI.TilingSprite(
   groundMenuTexture,
@@ -68,11 +67,13 @@ const groundenuSprite = new PIXI.TilingSprite(
 );
 groundenuSprite.tileScale.set(0.55);
 
+//Adding child to menuContainer with correct position of them
 menuContainer.addChild(cloudsMenuSprite);
 menuContainer.addChild(groundenuSprite);
 menuContainer.addChild(startButton);
 menuContainer.addChild(logoText);
 
+//Adding child to menuContainer with correct position of them for Phone version
 if (mediaQueryMenu.matches) {
   const groundMenuMobileTexture = PIXI.Texture.from("./images/ground.png");
   const groundenuMobileSprite = new PIXI.TilingSprite(
@@ -84,31 +85,27 @@ if (mediaQueryMenu.matches) {
   app.ticker.add(function () {
     groundenuMobileSprite.tilePosition.x -= 1;
   });
-  menuContainer.removeChild(groundenuSprite);
-  app.stage.addChild(groundenuMobileSprite);
 }
 
 // Function to start the game
 function startGame() {
   // Remove the menu container from the stage
   app.stage.removeChild(menuContainer);
-
-  // Start the main game logic
+  // Start the main game logic, below
   startMainGame();
 }
 function startMainGame() {
+  //Additional rules for Mobile
   const mediaQuery = window.matchMedia("(max-width: 400px)");
 
+  //Game Audio
   const audioCoin = new Audio("./audio/coin.wav");
   const gameOver = new Audio("./audio/gameover.wav");
-
   const fontMusicBg = new Audio("./audio/bgmusic.mp3");
   fontMusicBg.loop = true;
-  // fontMusicBg.play();
+  fontMusicBg.play();
 
   const app = new Application({
-    // width: 500,
-    // height: 500,
     transparent: false,
     antialias: true,
   });
@@ -120,11 +117,15 @@ function startMainGame() {
   const loader = PIXI.Loader.shared;
 
   //ANIMATION CHARACTER
+  loader
+    .add("tileset", "./images/spritesheet.json")
 
-  loader.add("tileset", "./images/spritesheet.json").load(setup);
+    .load(setup);
+
   const gsap = window.gsap;
 
   function setup(loader, resources) {
+    // Running right animation
     const textures = [];
     for (let i = 1; i < 4; i++) {
       const texture = PIXI.Texture.from(`RunRight0${i}.png`);
@@ -133,7 +134,6 @@ function startMainGame() {
 
     const drag = new PIXI.AnimatedSprite(textures);
 
-    // drag.position.set(0, 450);
     drag.position.set(0, 750);
     drag.scale.set(1.7, 1.7);
     app.stage.addChild(drag);
@@ -302,10 +302,8 @@ function startMainGame() {
       function gameOverAnimation() {
         const gameOverTexture = PIXI.Texture.from(`./images/gameovertxt.png`);
         const gameOverTSprite = new PIXI.Sprite(gameOverTexture);
-        gameOverTSprite.anchor.set(0.1, -0.1);
-        gameOverTSprite.interactive = true;
-        gameOverTSprite.x = window.innerHeight / 2 - 150;
-        gameOverTSprite.y = window.innerWidth / 2 - 450;
+        gameOverTSprite.anchor.set(-0.5, -0.3);
+
         gameOverTSprite.width = 800;
         gameOverTSprite.height = 800;
         if (mediaQuery.matches) {
@@ -424,17 +422,27 @@ function startMainGame() {
     });
   }
 
-  //Whisper enemy first
-
-  const enemyTexture = PIXI.Texture.from("./images/whisper.png");
+  //Cone enemy first
+  const enemyTexture = PIXI.Texture.from("./images/coneOne.png");
   const enemySprite = new PIXI.Sprite(enemyTexture);
+  enemySprite.width = 160;
+  enemySprite.height = 160;
 
   enemySprite.interactive = true;
   enemySprite.x = 2600;
   enemySprite.y = 700;
 
   app.ticker.add(function () {
-    enemySprite.x -= 6;
+    enemySprite.x -= 8;
+    app.ticker.add(function (delta) {
+      enemySprite.anchor.set(0.5, 0.5);
+      enemySprite.pivot.set(
+        enemySprite.width / 2 - enemySprite.width / 2,
+        enemySprite.height / 2 - enemySprite.height / 2
+      );
+      enemySprite.rotation -= 0.0001 * delta;
+    });
+
     if (enemySprite.x < -190) {
       resetRockPosition();
       function resetRockPosition() {
@@ -446,20 +454,28 @@ function startMainGame() {
       }
     }
   });
-  //Whisper enemy Second
 
-  const enemySecondTexture = PIXI.Texture.from("./images/whisperSecond.png");
+  //Cone enemy Second
+  const enemySecondTexture = PIXI.Texture.from("./images/coneSecond.png");
   const enemySecondSprite = new PIXI.Sprite(enemySecondTexture);
 
-  enemySecondSprite.width = 120;
-  enemySecondSprite.height = 120;
+  enemySecondSprite.width = 190;
+  enemySecondSprite.height = 190;
 
   enemySecondSprite.interactive = true;
   enemySecondSprite.x = 3600;
   enemySecondSprite.y = 300;
 
   app.ticker.add(function () {
-    enemySecondSprite.x -= 6;
+    enemySecondSprite.x -= 9;
+    app.ticker.add(function (delta) {
+      enemySecondSprite.anchor.set(0.5, 0.5);
+      enemySecondSprite.pivot.set(
+        enemySecondSprite.width / 2 - enemySecondSprite.width / 2,
+        enemySecondSprite.height / 2 - enemySecondSprite.height / 2
+      );
+      enemySecondSprite.rotation -= 0.0001 * delta;
+    });
 
     if (enemySecondSprite.x < -190) {
       resetRockPosition();
@@ -493,6 +509,7 @@ function startMainGame() {
       }
     }
   });
+
   //Clouds
   const cloudsTexture = PIXI.Texture.from("./images/clouds.png");
   const cloudsSprite = new PIXI.TilingSprite(
@@ -506,8 +523,8 @@ function startMainGame() {
   });
   app.stage.addChild(cloudsSprite);
 
+  //Clouds logic for Mobile
   if (mediaQuery.matches) {
-    // alert("Media Query Matched!");
     const cloudsTextureMobile = PIXI.Texture.from("./images/clouds.png");
     const cloudsSpriteMobile = new PIXI.TilingSprite(
       cloudsTextureMobile,
@@ -546,14 +563,13 @@ function startMainGame() {
     app.stage.addChild(houseSprite);
   }
   house();
-
   //House Second
   function houseSecond() {
     const houseSecondTexture = PIXI.Texture.from("./images/houseSecond.png");
     const houseSecondSprite = new PIXI.Sprite(houseSecondTexture);
 
     houseSecondSprite.interactive = true;
-    houseSecondSprite.x = 2600;
+    houseSecondSprite.x = 2900;
     houseSecondSprite.y = 510;
     houseSecondSprite.animationSpeed = 100;
     houseSecondSprite.width = 500;
@@ -564,7 +580,7 @@ function startMainGame() {
       if (houseSecondSprite.x < -600) {
         resetRockPosition();
         function resetRockPosition() {
-          houseSecondSprite.x = 3900;
+          houseSecondSprite.x = 7100;
         }
       }
     });
@@ -576,7 +592,7 @@ function startMainGame() {
     const houseThirdSprite = new PIXI.Sprite(houseThirdTexture);
 
     houseThirdSprite.interactive = true;
-    houseThirdSprite.x = 3600;
+    houseThirdSprite.x = 3900;
     houseThirdSprite.y = 480;
     houseThirdSprite.animationSpeed = 100;
     houseThirdSprite.width = 500;
@@ -606,9 +622,8 @@ function startMainGame() {
   groundSprite.tileScale.set(0.4, 0.5);
   app.stage.addChild(groundSprite);
 
-  //Mobile logic
+  //Ground logic for mobile
   if (mediaQuery.matches) {
-    // alert("Media Query Matched!");
     app.ticker.add(function () {
       groundSpriteMobile.tilePosition.x -= 3;
     });
