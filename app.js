@@ -32,7 +32,7 @@ const style = new PIXI.TextStyle({
   wordWrapWidth: 440,
   lineJoin: "round",
 });
-const logoText = new PIXI.Text("FOREST RUN", style);
+const logoText = new PIXI.Text(`FOREST RUN`, style);
 logoText.anchor.set(0.5);
 logoText.position.set(app.screen.width / 2, app.screen.height / 2 - 300);
 
@@ -99,6 +99,7 @@ function startMainGame() {
   const mediaQuery = window.matchMedia("(max-width: 400px)");
 
   //Game Audio
+  const bonus = new Audio("./audio/bonus.wav");
   const audioCoin = new Audio("./audio/coin.wav");
   const gameOver = new Audio("./audio/gameover.wav");
   const fontMusicBg = new Audio("./audio/bgmusic.mp3");
@@ -252,8 +253,6 @@ function startMainGame() {
     //Add Collision drag and money
     let numberCoin = 0;
     app.ticker.add(function () {
-      drag.position.x += 0;
-
       //Text for count
       const style = new PIXI.TextStyle({
         fontFamily: "Arial",
@@ -278,7 +277,35 @@ function startMainGame() {
 
       app.stage.addChild(richText);
 
-      // Check collision between drag and moneySprite
+      // Check collision between drag and Bonus 100
+      if (collision(drag, bonusSprite)) {
+        console.log("Collision detected between drag and Bonus");
+        setTimeout(() => {
+          numberCoin += 100;
+          bonusSprite.width = 1;
+          bonusSprite.height = 1;
+          bonus.play();
+          app.ticker.add(() => {
+            bonusSprite.position.x -= 9;
+            app.ticker.add(function (delta) {
+              bonusSprite.anchor.set(0.5, 0.5);
+              bonusSprite.pivot.set(
+                bonusSprite.width / 2 - bonusSprite.width / 2,
+                bonusSprite.height / 2 - bonusSprite.height / 2
+              );
+              bonusSprite.rotation -= 0.0001 * delta;
+            });
+          });
+        }, 100);
+        if (bonusSprite.width == 1) {
+          bonusSprite.x = 6400;
+        }
+        const min = 100;
+        const max = 650;
+        const randomCoinPosition = Math.random() * (max - min + 1) + min;
+        bonusSprite.y = randomCoinPosition;
+      }
+
       if (collision(drag, moneySprite)) {
         console.log("Collision detected between drag and moneySprite");
         setTimeout(() => {
@@ -298,7 +325,6 @@ function startMainGame() {
           moneySprite.y = randomCoinPosition;
         }, 100);
       }
-
       function gameOverAnimation() {
         const gameOverTexture = PIXI.Texture.from(`./images/gameovertxt.png`);
         const gameOverTSprite = new PIXI.Sprite(gameOverTexture);
@@ -314,6 +340,7 @@ function startMainGame() {
           gameOverTSprite.height = 200;
         }
         app.stage.addChild(gameOverTSprite);
+        fontMusicBg.pause();
         gameOver.play();
       }
       // Check collision between drag and rock
@@ -454,7 +481,6 @@ function startMainGame() {
       }
     }
   });
-
   //Cone enemy Second
   const enemySecondTexture = PIXI.Texture.from("./images/coneSecond.png");
   const enemySecondSprite = new PIXI.Sprite(enemySecondTexture);
@@ -485,6 +511,23 @@ function startMainGame() {
         const max = 550;
         const randomEnemyPosition = Math.random() * (max - min + 1) + min;
         enemySecondSprite.y = randomEnemyPosition;
+      }
+    }
+  });
+  // Gift
+  const bonusTexture = PIXI.Texture.from("./images/100point.png");
+  const bonusSprite = new PIXI.Sprite(bonusTexture);
+  bonusSprite.interactive = true;
+  bonusSprite.x = 2000;
+  bonusSprite.y = 450;
+  bonusSprite.width = 120;
+  bonusSprite.height = 90;
+  app.ticker.add(function () {
+    bonusSprite.position.x -= 4;
+    if (bonusSprite.x < -100) {
+      resetRockPosition();
+      function resetRockPosition() {
+        bonusSprite.x = 10000;
       }
     }
   });
@@ -642,7 +685,6 @@ function startMainGame() {
   //Rock
   const rockTexture = PIXI.Texture.from("./images/rock.png");
   const rockSprite = new PIXI.Sprite(rockTexture);
-
   rockSprite.interactive = true;
   rockSprite.x = 1600;
   rockSprite.y = 790;
@@ -664,7 +706,6 @@ function startMainGame() {
   //Rock Second
   const rockSecondTexture = PIXI.Texture.from("./images/rockSecond.png");
   const rockSecondSprite = new PIXI.Sprite(rockSecondTexture);
-
   rockSecondSprite.interactive = true;
   rockSecondSprite.x = 1000;
   rockSecondSprite.y = 790;
@@ -685,7 +726,6 @@ function startMainGame() {
   //Rock Fouth
   const rockFourthTexture = PIXI.Texture.from("./images/rockFourth.png");
   const rockFourthSprite = new PIXI.Sprite(rockFourthTexture);
-
   rockFourthSprite.interactive = true;
   rockFourthSprite.x = 2000;
   rockFourthSprite.y = 790;
@@ -745,9 +785,9 @@ function startMainGame() {
       }
     }
   });
-  app.stage.addChild(moonSprite);
 
   app.stage.addChild(moneySprite);
+  app.stage.addChild(bonusSprite);
 
   app.stage.addChild(enemySprite);
 
