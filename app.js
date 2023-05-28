@@ -159,7 +159,8 @@ function startMainGame() {
     function collisionRocks(a, b) {
       let firstObj = a.getBounds();
       let secondObj = b.getBounds();
-      let tolerance = 70;
+      let tolerance = 50;
+
       return (
         Math.abs(firstObj.x - secondObj.x) <= tolerance &&
         Math.abs(firstObj.y - secondObj.y) <= tolerance
