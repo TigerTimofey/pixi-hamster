@@ -461,11 +461,8 @@ function startMainGame() {
   enemySprite.height = 160;
 
   if (mediaQueryMenu.matches) {
-    enemySprite.width = 60;
-    enemySprite.height = 60;
-    app.ticker.add(function () {
-      enemySprite.x -= 0.2;
-    });
+    enemySprite.width = 90;
+    enemySprite.height = 90;
   }
 
   enemySprite.interactive = true;
@@ -474,6 +471,9 @@ function startMainGame() {
 
   app.ticker.add(function () {
     enemySprite.x -= 8;
+    if (mediaQueryMenu.matches) {
+      enemySprite.x += 2;
+    }
 
     app.ticker.add(function (delta) {
       enemySprite.anchor.set(0.5, 0.5);
@@ -505,9 +505,6 @@ function startMainGame() {
   if (mediaQueryMenu.matches) {
     enemySecondSprite.width = 70;
     enemySecondSprite.height = 70;
-    app.ticker.add(function () {
-      enemySecondSprite.x -= 0.2;
-    });
   }
 
   enemySecondSprite.interactive = true;
@@ -516,6 +513,9 @@ function startMainGame() {
 
   app.ticker.add(function () {
     enemySecondSprite.x -= 9;
+    if (mediaQueryMenu.matches) {
+      enemySecondSprite.x += 2;
+    }
     app.ticker.add(function (delta) {
       enemySecondSprite.anchor.set(0.5, 0.5);
       enemySecondSprite.pivot.set(
