@@ -32,6 +32,7 @@ const style = new PIXI.TextStyle({
   wordWrapWidth: 440,
   lineJoin: "round",
 });
+let numberCoin = 0;
 const logoText = new PIXI.Text(`FOREST RUN`, style);
 logoText.anchor.set(0.5);
 logoText.position.set(app.screen.width / 2, app.screen.height / 2 - 300);
@@ -132,14 +133,17 @@ function startMainGame() {
       const texture = PIXI.Texture.from(`RunRight0${i}.png`);
       textures.push(texture);
     }
-
     const drag = new PIXI.AnimatedSprite(textures);
-
-    drag.position.set(0, 750);
+    drag.position.set(0, 760);
     drag.scale.set(1.7, 1.7);
     app.stage.addChild(drag);
     drag.play();
     drag.animationSpeed = 0.2;
+    if (mediaQueryMenu.matches) {
+      drag.width = 90;
+      drag.height = 90;
+      drag.position.set(0, 760);
+    }
 
     //Collision for Coins and Count
     function collision(a, b) {
@@ -201,7 +205,7 @@ function startMainGame() {
           ease: "power2.out",
           onComplete: function () {
             gsap.to(drag, {
-              y: 750,
+              y: 760,
               x: "+=0",
               duration: jumpDuration,
               ease: "power1.in",
@@ -251,7 +255,7 @@ function startMainGame() {
       });
     }
     //Add Collision drag and money
-    let numberCoin = 0;
+    // numberCoin = 0;
     app.ticker.add(function () {
       //Text for count
       const style = new PIXI.TextStyle({
@@ -447,6 +451,7 @@ function startMainGame() {
         }, 100);
       }
     });
+    return numberCoin;
   }
 
   //Cone enemy first
@@ -455,12 +460,21 @@ function startMainGame() {
   enemySprite.width = 160;
   enemySprite.height = 160;
 
+  if (mediaQueryMenu.matches) {
+    enemySprite.width = 60;
+    enemySprite.height = 60;
+    app.ticker.add(function () {
+      enemySprite.x -= 0.2;
+    });
+  }
+
   enemySprite.interactive = true;
   enemySprite.x = 2600;
   enemySprite.y = 700;
 
   app.ticker.add(function () {
     enemySprite.x -= 8;
+
     app.ticker.add(function (delta) {
       enemySprite.anchor.set(0.5, 0.5);
       enemySprite.pivot.set(
@@ -487,6 +501,14 @@ function startMainGame() {
 
   enemySecondSprite.width = 190;
   enemySecondSprite.height = 190;
+
+  if (mediaQueryMenu.matches) {
+    enemySecondSprite.width = 70;
+    enemySecondSprite.height = 70;
+    app.ticker.add(function () {
+      enemySecondSprite.x -= 0.2;
+    });
+  }
 
   enemySecondSprite.interactive = true;
   enemySecondSprite.x = 3600;
@@ -790,6 +812,5 @@ function startMainGame() {
   app.stage.addChild(bonusSprite);
 
   app.stage.addChild(enemySprite);
-
   app.stage.addChild(enemySecondSprite);
 }
